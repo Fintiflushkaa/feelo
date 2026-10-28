@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { AppShellComponent } from '@shared/layout/app-shell/app-shell.component';
+import { AuthPage } from './pages/auth/auth.page';
 
 export const routes: Routes = [
   {
@@ -49,7 +50,7 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    loadComponent: () => import('./pages/auth/auth.page').then((m) => m.AuthPage),
+    component: AuthPage,
     title: 'Feelo · Вход',
   },
   {
