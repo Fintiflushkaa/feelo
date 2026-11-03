@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -18,7 +19,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@ngx-env/builder:application",
+          "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
@@ -58,7 +59,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@ngx-env/builder:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "feelo:build:production"
@@ -67,12 +68,10 @@
               "buildTarget": "feelo:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {}
+          "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@ngx-env/builder:unit-test",
-          "options": {}
+          "builder": "@angular/build:unit-test"
         }
       }
     }

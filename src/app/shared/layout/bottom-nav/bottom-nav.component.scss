@@ -1,14 +1,19 @@
-$nav-background: #f4efe8;
+$nav-background: #ffffff;
 $nav-color: #8a7362;
 $nav-active: #6b7f6e;
 
 .bottom-nav {
   box-sizing: border-box;
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10;
+
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
 
-  width: 328px;
-  max-width: 100%;
+  margin-inline: 31px;
+  margin-bottom: 21px;
   height: 60px;
   padding: 19px 0 7px;
 
@@ -30,7 +35,7 @@ $nav-active: #6b7f6e;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 
-    &[aria-current="page"] {
+    &.bottom-nav__item--active {
       color: $nav-active;
     }
 
