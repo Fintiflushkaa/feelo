@@ -1,0 +1,8 @@
+{
+  "/api/**": {
+    "target": "https://feelo.mooo.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api": "" }
+  }
+}

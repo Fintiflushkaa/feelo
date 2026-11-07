@@ -14,16 +14,18 @@
       <button
         class="text-button"
         type="button"
+        [disabled]="pending()"
         (click)="switchMode(mode() === 'register' ? 'login' : 'register')"
       >
         {{ mode() === 'register' ? 'Войти' : 'Зарегистрироваться' }}
       </button>
     </p>
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="pending()" novalidate>
       @if (mode() === 'register') {
         <div class="field">
           <input
             id="username"
+            [readOnly]="pending()"
             formControlName="username"
             aria-label="Имя пользователя"
             placeholder="Имя пользователя"
@@ -39,6 +41,7 @@
       <div class="field">
         <input
           id="email"
+          [readOnly]="pending()"
           type="email"
           formControlName="email"
           aria-label="Email"
@@ -55,6 +58,7 @@
       <div class="field">
         <input
           id="password"
+          [readOnly]="pending()"
           type="password"
           formControlName="password"
           aria-label="Пароль"
@@ -64,7 +68,13 @@
           aria-describedby="password-error"
         />
         @if (form.controls.password.touched && form.controls.password.invalid) {
-          <p class="field-error" id="password-error">Пароль должен содержать минимум 6 символов.</p>
+          <p class="field-error" id="password-error">
+            {{
+              mode() === 'register'
+                ? 'Пароль должен содержать минимум 6 символов.'
+                : 'Введите пароль.'
+            }}
+          </p>
         }
       </div>
       @if (error()) {
@@ -73,12 +83,9 @@
       @if (notice()) {
         <p class="feedback" role="status">{{ notice() }}</p>
       }
-      <button class="submit-button" type="submit">
-        {{ mode() === 'register' ? 'Зарегистрироваться' : 'Войти' }}
+      <button class="submit-button" type="submit" [disabled]="pending()">
+        {{ pending() ? 'Подождите…' : mode() === 'register' ? 'Зарегистрироваться' : 'Войти' }}
       </button>
     </form>
-    @if (mode() === 'login') {
-      <p class="demo-hint">Демо-вход: demo&#64;feelo.app · feelo123</p>
-    }
   </section>
 </main>

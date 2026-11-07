@@ -5,7 +5,8 @@ import { catchError, throwError } from 'rxjs';
 export const errorInterceptor: HttpInterceptorFn = (req, next) =>
   next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      console.error('[api] request failed', req.url, error);
+      // Login credentials are query parameters: do not log the request URL or error object.
+      console.error('[api] request failed', req.method, error.status);
       return throwError(() => error);
     }),
   );
