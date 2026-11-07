@@ -1,0 +1,91 @@
+<main class="auth-screen">
+  <section class="auth-content" aria-labelledby="auth-title">
+    <img
+      class="character"
+      src="/auth-character.svg"
+      alt="Солнечный персонаж Feelo медитирует"
+      width="260"
+      height="260"
+      fetchpriority="high"
+    />
+    <h1 id="auth-title">{{ mode() === 'register' ? 'Зарегистрироваться' : 'Войти в аккаунт' }}</h1>
+    <p class="switch-prompt">
+      {{ mode() === 'register' ? 'Уже есть аккаунт?' : 'Ещё нет аккаунта?' }}
+      <button
+        class="text-button"
+        type="button"
+        [disabled]="pending()"
+        (click)="switchMode(mode() === 'register' ? 'login' : 'register')"
+      >
+        {{ mode() === 'register' ? 'Войти' : 'Зарегистрироваться' }}
+      </button>
+    </p>
+    <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="pending()" novalidate>
+      @if (mode() === 'register') {
+        <div class="field">
+          <input
+            id="username"
+            [readOnly]="pending()"
+            formControlName="username"
+            aria-label="Имя пользователя"
+            placeholder="Имя пользователя"
+            autocomplete="nickname"
+            [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid"
+            aria-describedby="username-error"
+          />
+          @if (form.controls.username.touched && form.controls.username.invalid) {
+            <p class="field-error" id="username-error">Укажите имя пользователя.</p>
+          }
+        </div>
+      }
+      <div class="field">
+        <input
+          id="email"
+          [readOnly]="pending()"
+          type="email"
+          formControlName="email"
+          aria-label="Email"
+          placeholder="Email"
+          autocomplete="email"
+          autocapitalize="none"
+          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+          aria-describedby="email-error"
+        />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <p class="field-error" id="email-error">Введите корректный email.</p>
+        }
+      </div>
+      <div class="field">
+        <input
+          id="password"
+          [readOnly]="pending()"
+          type="password"
+          formControlName="password"
+          aria-label="Пароль"
+          placeholder="Пароль"
+          [autocomplete]="mode() === 'register' ? 'new-password' : 'current-password'"
+          [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+          aria-describedby="password-error"
+        />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <p class="field-error" id="password-error">
+            {{
+              mode() === 'register'
+                ? 'Пароль должен содержать минимум 6 символов.'
+                : 'Введите пароль.'
+            }}
+          </p>
+        }
+      </div>
+      @if (error()) {
+        <p class="feedback" role="alert">{{ error() }}</p>
+      }
+      @if (notice()) {
+        <p class="feedback" role="status">{{ notice() }}</p>
+      }
+      <button class="submit-button" type="submit" [disabled]="pending()">
+        {{ pending() ? 'Подождите…' : mode() === 'register' ? 'Зарегистрироваться' : 'Войти' }}
+      </button>
+    </form>
+  </section>
+</main>

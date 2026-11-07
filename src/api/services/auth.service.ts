@@ -1,30 +1,36 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, switchMap, tap } from 'rxjs';
-import { BaseUserDto } from '../models/base-user-dto';
+import { Observable, map, tap } from 'rxjs';
+import { UserDto } from '../models/user-dto';
 import { LoginCreateParams } from '../models/login-create-params';
+import { API_URL } from '../../app/core/api/api-url';
+import { TokenStorageService } from '../../app/core/auth/token-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = import.meta.env.NG_APP_API_URL;
+  private readonly tokens = inject(TokenStorageService);
 
   login(params: LoginCreateParams): Observable<string> {
     return this.http
-      .post(`${this.apiUrl}/auth/login`, params, { responseType: 'text' })
-      .pipe(tap((token) => localStorage.setItem('token', token)));
+      .post(`${API_URL}/auth/login`, null, { params: { ...params }, responseType: 'text' })
+      .pipe(
+        // Accept the documented JSON string and a plain-text JWT response.
+        map((response) => {
+          const value = response.trim();
+          const token: unknown = value.startsWith('"') ? JSON.parse(value) : value;
+          if (typeof token !== 'string' || !token) throw new Error('Empty authentication token');
+          return token;
+        }),
+        tap((token) => this.tokens.setToken(token)),
+      );
   }
 
-  register(dto: BaseUserDto): Observable<string> {
-    return this.http.post(`${this.apiUrl}/auth/register`, dto).pipe(
-      switchMap(() =>
-        this.login({
-          email: dto.email,
-          password: dto.password,
-        }),
-      ),
-    );
+  register(dto: UserDto): Observable<void> {
+    return this.http
+      .post(`${API_URL}/auth/register`, dto, { responseType: 'text' })
+      .pipe(map(() => undefined));
   }
 }
