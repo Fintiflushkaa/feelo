@@ -1,9 +1,9 @@
-import { ActivityType } from './activity-type';
+import { EnergyZone } from './energy-zone';
 
 export interface CircadianWindowDto {
-  /** @format date-span */
+  /** @format date-time */
   start: string;
-  /** @format date-span */
+  /** @format date-time */
   end: string;
-  activity: ActivityType;
+  zone: EnergyZone;
 }

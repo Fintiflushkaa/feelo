@@ -50,6 +50,14 @@
               ],
               "outputHashing": "all"
             },
+            "local-proxy": {
+              "fileReplacements": [
+                {
+                  "replace": "src/app/core/api/api-url.ts",
+                  "with": "src/app/core/api/api-url.proxy.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -65,7 +73,8 @@
               "buildTarget": "feelo:build:production"
             },
             "development": {
-              "buildTarget": "feelo:build:development"
+              "buildTarget": "feelo:build:development,local-proxy",
+              "proxyConfig": "proxy.conf.cjs"
             }
           },
           "defaultConfiguration": "development"
