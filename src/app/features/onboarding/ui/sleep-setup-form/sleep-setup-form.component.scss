@@ -4,10 +4,13 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 .survey-screen {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   min-height: 100svh;
   background: #f4efe8;
-  padding: 40px 24px 32px;
+  padding: 40px 24px max(24px, env(safe-area-inset-bottom));
 }
 .survey-content {
   width: 100%;
@@ -120,7 +123,9 @@ input[type='radio'] {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: auto;
+  width: 100%;
+  max-width: 460px;
+  margin: auto auto 0;
 }
 button {
   min-height: 44px;

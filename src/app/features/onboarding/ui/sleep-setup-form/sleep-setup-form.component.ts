@@ -31,7 +31,7 @@ export class SleepSetupFormComponent {
   private readonly survey = inject(SurveyService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly heading = viewChild<ElementRef<HTMLHeadingElement>>('heading');
+  private readonly heading = viewChild.required<ElementRef>('heading');
   readonly step = signal(0);
   readonly pending = signal(false);
   readonly error = signal('');
