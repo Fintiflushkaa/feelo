@@ -4,9 +4,6 @@ import { SleepSetupFormComponent } from '@features/onboarding/ui/sleep-setup-for
 @Component({
   selector: 'app-onboarding-page',
   imports: [SleepSetupFormComponent],
-  template: `
-    <h1>Онбординг</h1>
-    <app-sleep-setup-form />
-  `,
+  template: `<app-sleep-setup-form />`,
 })
 export class OnboardingPage {}

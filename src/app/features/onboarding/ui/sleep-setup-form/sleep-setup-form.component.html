@@ -1,0 +1,80 @@
+<main class="survey-screen">
+  <section class="survey-content" aria-labelledby="survey-title">
+    <img class="character" src="/test-character.svg" alt="Персонаж Feelo" width="260" height="260"
+      fetchpriority="high" />
+    <p class="eyebrow">Знакомимся с вашим ритмом</p>
+    <form id="sleep-setup-form" [formGroup]="form" (ngSubmit)="next()" [attr.aria-busy]="pending()" novalidate>
+      <div class="question">
+        <h1 #heading id="survey-title" tabindex="-1">{{ question.title }}</h1>
+        <fieldset [disabled]="pending()" aria-labelledby="survey-title">
+          @switch (question.kind) {
+          @case ('time') {
+          <label class="input-label" for="answer-time">Укажите время</label>
+          <input id="answer-time" type="time" [formControl]="control" aria-describedby="answer-error"
+            [attr.aria-invalid]="control.touched && control.invalid" />
+          }
+          @case ('duration') {
+          <label class="input-label" for="answer-duration">Количество часов</label>
+          <input id="answer-duration" type="number" min="0.25" max="24" step="any" placeholder="Например, 8"
+            [formControl]="control" aria-describedby="answer-error duration-hint"
+            [attr.aria-invalid]="control.touched && control.invalid" />
+          <p class="hint" id="duration-hint">
+            От 0,25 до 24 часов. Можно указать дробное число.
+          </p>
+          }
+          @default {
+          <div class="options">
+            @for (option of question.options; track option.value) {
+            <label class="option">
+              <input type="radio" [name]="question.key" [value]="option.value" [formControl]="control"
+                aria-describedby="answer-error" />
+              <span>{{ option.label }}</span>
+            </label>
+            }
+          </div>
+          }
+          }
+          @if (question.kind === 'restriction' && form.controls.restriction.value === 'yes') {
+          <label class="input-label restriction-label" for="required-wake">Во сколько вам необходимо проснуться?</label>
+          <input id="required-wake" type="time" [formControl]="form.controls.requiredWakeTime"
+            aria-describedby="required-wake-error" [attr.aria-invalid]="
+                form.controls.requiredWakeTime.touched && form.controls.requiredWakeTime.invalid
+              " />
+          @if (form.controls.requiredWakeTime.touched && form.controls.requiredWakeTime.invalid) {
+          <p class="feedback" id="required-wake-error" role="alert">
+            Укажите время пробуждения.
+          </p>
+          }
+          }
+          @if (control.touched && control.invalid) {
+          <p class="feedback" id="answer-error" role="alert">
+            @switch (question.kind) {
+            @case ('time') {
+            Укажите корректное время.
+            }
+            @case ('duration') {
+            Укажите продолжительность от 0,25 до 24 часов.
+            }
+            @default {
+            Выберите ответ.
+            }
+            }
+          </p>
+          }
+        </fieldset>
+      </div>
+      @if (error()) {
+      <p class="feedback" role="alert">{{ error() }}</p>
+      }
+    </form>
+  </section>
+  <nav class="navigation" aria-label="Навигация по анкете">
+    <button class="back" type="button" [disabled]="pending() || step() === 0" (click)="back()">
+      Назад
+    </button>
+    <span class="counter" aria-live="polite" aria-atomic="true">{{ step() + 1 }} / {{ questions.length }}</span>
+    <button class="next" type="submit" form="sleep-setup-form" [disabled]="pending()">
+      {{ pending() ? 'Отправка…' : step() === questions.length - 1 ? 'Подтвердить' : 'Вперёд' }}
+    </button>
+  </nav>
+</main>

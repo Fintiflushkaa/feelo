@@ -1,13 +1,26 @@
-import { CircadianWindowDto } from './circadian-window-dto';
+import { SleepScheduleDto } from './sleep-schedule-dto';
+import { AlarmUsage } from './alarm-usage';
+import { PeakPreference } from './peak-preference';
+import { DipPreference } from './dip-preference';
 
 export interface SurveyAnswerDto {
-  /** @format date-span */
-  wakeTime: string;
-  /** @format date-span */
-  sleepTime: string;
-  /** @format date-span */
-  freeDayWakeTime: string;
-  /** @format date-span */
-  freeDaySleepTime: string;
-  peakPeriods: CircadianWindowDto[];
+  workDaySleepSchedule: SleepScheduleDto;
+  freeDaySleepSchedule: SleepScheduleDto;
+  /**
+   * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+   * @example "08:00:00"
+   */
+  desiredSleepDuration: string;
+  /**
+   * @pattern ^\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+   * @example "23:00:00"
+   */
+  requiredWakeTime?: string | null;
+  alarmUsage: AlarmUsage;
+  generalPeak: PeakPreference;
+  mentalPeak: PeakPreference;
+  physicalPeak: PeakPreference;
+  socialPeak: PeakPreference;
+  routinePeak: PeakPreference;
+  afternoonDip: DipPreference;
 }
