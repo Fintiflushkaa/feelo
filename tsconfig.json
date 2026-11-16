@@ -18,9 +18,8 @@
     "paths": {
       "@app/*": ["src/app/*"],
       "@core/*": ["src/app/core/*"],
-      "@api/*": ["src/app/api/*"],
+      "@api/*": ["src/app/core/api/*"],
       "@features/*": ["src/app/features/*"],
-      "@pages/*": ["src/app/pages/*"],
       "@shared/*": ["src/app/shared/*"],
       "@domain/*": ["src/app/domain/*"]
     }

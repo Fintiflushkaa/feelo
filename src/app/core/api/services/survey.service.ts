@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { SurveyAnswerDto } from '../models/survey-answer-dto';
-import { API_URL } from '../../app/core/api/api-url';
+import { API_URL } from '../api-url';
 
 @Injectable({ providedIn: 'root' })
 export class SurveyService {

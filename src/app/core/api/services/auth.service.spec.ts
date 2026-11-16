@@ -3,9 +3,9 @@ import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { API_URL } from '../../app/core/api/api-url';
-import { TokenStorageService } from '../../app/core/auth/token-storage.service';
-import { authInterceptor } from '../../app/core/api/auth.interceptor';
+import { API_URL } from '../api-url';
+import { TokenStorageService } from '../../auth/token-storage.service';
+import { authInterceptor } from '../auth.interceptor';
 
 const jwt = (exp = Math.floor(Date.now() / 1000) + 3600) =>
   `eyJhbGciOiJIUzI1NiJ9.${btoa(JSON.stringify({ exp }))}.signature`;

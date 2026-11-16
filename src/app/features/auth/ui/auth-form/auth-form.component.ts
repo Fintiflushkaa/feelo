@@ -5,7 +5,7 @@ import { DestroyRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize, Observable } from 'rxjs';
-import { AuthService } from '../../../../../api/services/auth.service';
+import { AuthService } from '../../../../core/api/services/auth.service';
 
 @Component({
   selector: 'app-auth-form',

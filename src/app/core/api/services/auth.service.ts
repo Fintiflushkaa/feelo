@@ -3,8 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { UserDto } from '../models/user-dto';
 import { LoginCreateParams } from '../models/login-create-params';
-import { API_URL } from '../../app/core/api/api-url';
-import { TokenStorageService } from '../../app/core/auth/token-storage.service';
+import { API_URL } from '../api-url';
+import { TokenStorageService } from '../../auth/token-storage.service';
 
 @Injectable({
   providedIn: 'root',
