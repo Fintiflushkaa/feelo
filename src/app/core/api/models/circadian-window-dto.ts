@@ -1,4 +1,4 @@
-import { EnergyZone } from './energy-zone';
+import type { EnergyZone } from './energy-zone';
 
 export interface CircadianWindowDto {
   /** @format date-time */

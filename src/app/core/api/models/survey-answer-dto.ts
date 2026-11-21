@@ -1,7 +1,10 @@
-import { SleepScheduleDto } from './sleep-schedule-dto';
-import { AlarmUsage } from './alarm-usage';
-import { PeakPreference } from './peak-preference';
-import { DipPreference } from './dip-preference';
+import type { AlarmUsage } from './alarm-usage';
+
+import type { DipPreference } from './dip-preference';
+
+import type { PeakPreference } from './peak-preference';
+
+import type { SleepScheduleDto } from './sleep-schedule-dto';
 
 export interface SurveyAnswerDto {
   workDaySleepSchedule: SleepScheduleDto;

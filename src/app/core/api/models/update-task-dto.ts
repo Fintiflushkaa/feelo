@@ -1,4 +1,6 @@
-import { TaskCategory } from './task-category';
+import type { TaskCategory } from './task-category';
+
+import type { TaskPriority } from './task-priority';
 
 export interface UpdateTaskDto {
   name?: string | null;
@@ -11,4 +13,7 @@ export interface UpdateTaskDto {
    * @example "08:00:00"
    */
   duration?: string | null;
+  priority?: TaskPriority;
+  /** @format date-time */
+  deadline?: string | null;
 }
