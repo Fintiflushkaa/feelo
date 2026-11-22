@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { ReminderSettingsComponent } from '@features/notifications/ui/reminder-settings/reminder-settings.component';
+import { ProfilePage } from '../profile/profile.page';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [ReminderSettingsComponent],
-  template: `
-    <h1>Настройки</h1>
-    <app-reminder-settings />
-  `,
+  imports: [ProfilePage],
+  template: `<app-profile-page />`,
 })
 export class SettingsPage {}

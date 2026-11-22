@@ -1,0 +1,49 @@
+<section class="profile" aria-label="Профиль пользователя">
+  <header class="profile__identity" [attr.aria-busy]="pending()">
+    <div class="profile__avatar" role="img" aria-label="Фото профиля отсутствует"></div>
+    @if (profile(); as user) {
+      <h1 class="profile__name">{{ user.name }}</h1>
+      <p class="profile__description">Описание профиля</p>
+    } @else if (pending()) {
+      <p class="profile__description" role="status">Загрузка профиля…</p>
+    }
+    @if (error()) {
+      <p class="profile__description" role="alert">{{ error() }}</p>
+      <button class="profile__retry" type="button" (click)="loadProfile()">Повторить</button>
+    }
+  </header>
+
+  <ul class="profile__menu" aria-label="Настройки профиля">
+    <li class="profile__item">
+      <button class="profile__link" type="button" disabled title="Раздел пока недоступен">
+        <span>Личные данные</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6" /></svg>
+      </button>
+    </li>
+    <li class="profile__item">
+      <a class="profile__link" routerLink="/onboarding">
+        <span>Анкета</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6" /></svg>
+      </a>
+    </li>
+    <li class="profile__item">
+      <button class="profile__link" type="button" disabled title="Раздел пока недоступен">
+        <span>Синхронизации</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6" /></svg>
+      </button>
+    </li>
+    <li class="profile__item">
+      <button class="profile__link" type="button" disabled title="Раздел пока недоступен">
+        <span>Поддержка</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6" /></svg>
+      </button>
+    </li>
+    <li class="profile__item profile__item--danger">
+      <button class="profile__link profile__link--danger" type="button" disabled
+        title="Удаление аккаунта пока недоступно">Удалить аккаунт</button>
+    </li>
+    <li class="profile__item profile__item--danger">
+      <button class="profile__link profile__link--danger" type="button" (click)="logout()">Выйти</button>
+    </li>
+  </ul>
+</section>

@@ -1,0 +1,135 @@
+:host {
+  display: block;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100dvh;
+  padding: clamp(24px, calc(100dvh - 590px), 380px) 31px
+    calc(124px + env(safe-area-inset-bottom, 0px));
+  color: #2d2523;
+
+  &__identity {
+    width: 100%;
+    max-width: 420px;
+    min-height: 166px;
+    text-align: center;
+  }
+
+  &__retry {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border: 1px solid #6b7f6e;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid #6b7f6e;
+      outline-offset: 3px;
+    }
+  }
+
+  &__avatar {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #d9d9d9;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 26px;
+    overflow-wrap: anywhere;
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 16px;
+    line-height: 24px;
+    overflow-wrap: anywhere;
+  }
+
+  &__menu {
+    width: 100%;
+    max-width: 420px;
+    margin: 22px 0 0;
+    padding: 16px 20px 6px;
+    list-style: none;
+    border: 1px solid #eae5de;
+    border-radius: 22px;
+    background: #f4efe8;
+    box-shadow: 0 4px 6px 2px rgb(0 0 0 / 15%);
+  }
+
+  &__item:not(.profile__item--danger) {
+    border-bottom: 1px solid #ccbeb0;
+  }
+
+  &__item + &__item--danger {
+    margin-top: 8px;
+  }
+
+  &__item--danger + &__item--danger {
+    margin-top: 0;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    min-height: 35px;
+    padding: 5px 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:disabled {
+      opacity: 1;
+      cursor: default;
+      -webkit-text-fill-color: currentColor;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #6b7f6e;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    &:not(:disabled):hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &--danger {
+      color: #f00;
+    }
+  }
+}
