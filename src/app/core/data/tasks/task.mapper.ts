@@ -1,6 +1,6 @@
-import type { TaskDto } from '@api/models/task-dto';
-import type { TaskDtoTaskSyncResult } from '@api/models/task-dto-task-sync-result';
-import type { UpdateTaskDto } from '@api/models/update-task-dto';
+import { isRecord, isTaskVersion, SyncResponseError } from './sync-response';
+import type { TaskDto } from '@core/api/models/task-dto';
+import type { UpdateTaskDto } from '@core/api/models/update-task-dto';
 import type { TaskRecord } from '@core/storage/storage.models';
 import type {
   CreateTaskInput,
@@ -35,9 +35,7 @@ const updateTaskFields = {
   completedAt: true,
 } satisfies Record<keyof UpdateTaskInput, true>;
 
-/** Выбирает разрешённые поля: сохраняет false/null/пустую строку, пропускает undefined. */
 function pickDefined<T extends object>(source: T, fields: Readonly<Record<keyof T, true>>): T {
-  // Приведение ограничено обходом ключей; это не runtime-валидатор.
   const result = {} as T;
 
   for (const key of Object.keys(fields) as Array<keyof T>) {
@@ -59,7 +57,6 @@ function taskData(source: CreateTaskPayload): TaskData {
   };
 }
 
-/** DateOnly: проверка календарной даты без изменения её строки/часового пояса. */
 export function isTaskDate(value: unknown): value is string {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000-'))
     return false;
@@ -81,53 +78,9 @@ export function taskInputToPatch(input: UpdateTaskInput): UpdateTaskInput {
   return patch satisfies Omit<UpdateTaskDto, 'version'>;
 }
 
-export function isTaskVersion(value: unknown): value is number {
-  return (
-    typeof value === 'number' &&
-    Number.isInteger(value) &&
-    value >= -2_147_483_648 &&
-    value <= 2_147_483_647
-  );
-}
+export { isTaskVersion, taskSyncResultFor } from './sync-response';
+export type { TaskSyncResponse } from './sync-response';
 
-/** Create и update возвращают UUID → result; поддержана и прежняя одиночная аннотация API. */
-export type TaskSyncResponse =
-  | TaskDtoTaskSyncResult
-  | Readonly<Record<string, TaskDtoTaskSyncResult>>;
-
-function isSingleSyncResult(response: TaskSyncResponse): response is TaskDtoTaskSyncResult {
-  return Object.hasOwn(response, 'status') && typeof response.status === 'string';
-}
-
-/** Разворачивает только свой ID. HttpClient<T> сам форму JSON не преобразует. */
-export function taskSyncResultFor(
-  taskId: string,
-  response: TaskSyncResponse,
-): TaskDtoTaskSyncResult {
-  if (!response || typeof response !== 'object' || Array.isArray(response)) {
-    throw new Error(`Некорректный ответ синхронизации для задачи ${taskId}`);
-  }
-  const result = isSingleSyncResult(response)
-    ? response
-    : Object.hasOwn(response, taskId)
-      ? response[taskId]
-      : undefined;
-  if (
-    !result ||
-    typeof result !== 'object' ||
-    Array.isArray(result) ||
-    !Object.hasOwn(result, 'status') ||
-    typeof result.status !== 'string'
-  ) {
-    throw new Error(`Сервер не вернул результат синхронизации для задачи ${taskId}`);
-  }
-  const normalized = { ...result };
-  // Фактический JSON содержит null; сгенерированный DTO допускает только optional TaskDto.
-  if (normalized.conflictedTask == null) delete normalized.conflictedTask;
-  return normalized;
-}
-
-/** Сборка готового HTTP-запроса; неизвестная версия не подменяется нулём. */
 export function taskPatchToDto(input: UpdateTaskInput, version: number): UpdateTaskDto {
   if (!isTaskVersion(version)) {
     throw new Error(
@@ -137,6 +90,8 @@ export function taskPatchToDto(input: UpdateTaskInput, version: number): UpdateT
 
   return { ...taskInputToPatch(input), version };
 }
+
+export const UNPLANNED_TASK_END = '0001-01-01T00:00:00Z';
 
 export function taskCreateToDto(
   payload: CreateTaskPayload,
@@ -155,7 +110,7 @@ export function taskCreateToDto(
     ownerId,
     created,
     updated: created,
-    to: '0001-01-01T00:00:00Z',
+    to: UNPLANNED_TASK_END,
     version: 0,
     isCompleted: false,
     completedAt: null,
@@ -187,4 +142,43 @@ export function taskRecordToTask(record: TaskRecord): Task {
     completedAt: record.completedAt ?? null,
     syncState: record.syncState,
   };
+}
+
+export function taskSnapshotFor(
+  response: unknown,
+  ownerId: string,
+): { records: TaskRecord[]; rejected: number; seenIds: string[] } {
+  if (!Array.isArray(response)) throw new SyncResponseError('GET задач вернул не массив');
+  const records: TaskRecord[] = [];
+  let rejected = 0;
+  const seenIds: string[] = [];
+  for (const row of response) {
+    if (isRecord(row) && typeof row['id'] === 'string') seenIds.push(row['id']);
+    const strings = [
+      'id',
+      'name',
+      'type',
+      'duration',
+      'priority',
+      'ownerId',
+      'created',
+      'updated',
+      'to',
+    ];
+    const nullable = ['description', 'from', 'deadline', 'completedAt'];
+    if (
+      !isRecord(row) ||
+      !strings.every((key) => typeof row[key] === 'string') ||
+      !nullable.every((key) => row[key] == null || typeof row[key] === 'string') ||
+      typeof row['isCompleted'] !== 'boolean' ||
+      !isTaskDate(row['date']) ||
+      !isTaskVersion(row['version']) ||
+      (row['ownerId'] as string).toLowerCase() !== ownerId.toLowerCase()
+    ) {
+      rejected += 1;
+      continue;
+    }
+    records.push(taskDtoToRecord(row as unknown as TaskDto));
+  }
+  return { records, rejected, seenIds };
 }
