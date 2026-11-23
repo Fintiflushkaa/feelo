@@ -1,3 +1,3 @@
-import type { BaseTaskDto } from './base-task-dto';
+import type { TaskDto } from './task-dto';
 
-export type CreatemanyCreatePayload = BaseTaskDto[];
+export type CreatemanyCreatePayload = TaskDto[];

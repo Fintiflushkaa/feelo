@@ -21,7 +21,7 @@
       "@api/*": ["src/app/core/api/*"],
       "@features/*": ["src/app/features/*"],
       "@shared/*": ["src/app/shared/*"],
-      "@domain/*": ["src/app/domain/*"]
+      "@data/*": ["src/app/core/data/*"]
     }
   },
   "angularCompilerOptions": {

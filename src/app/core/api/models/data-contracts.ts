@@ -48,24 +48,6 @@ export type DipPreference =
 
 export type AlarmUsage = "None" | "Sometimes" | "Always";
 
-export interface BaseTaskDto {
-  /** @format uuid */
-  id: string;
-  name: string;
-  description?: string | null;
-  type: TaskCategory;
-  /** @format date-time */
-  from?: string | null;
-  /**
-   * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
-   * @example "08:00:00"
-   */
-  duration: string;
-  priority: TaskPriority;
-  /** @format date-time */
-  deadline?: string | null;
-}
-
 export interface CircadianCurveDto {
   kind: EnergyCurveKind;
   points: EnergyPointDto[];
@@ -177,6 +159,8 @@ export interface TaskDto {
   name: string;
   description?: string | null;
   type: TaskCategory;
+  /** @format date */
+  date: string;
   /** @format date-time */
   from?: string | null;
   /**
@@ -195,12 +179,18 @@ export interface TaskDto {
   updated: string;
   /** @format date-time */
   to: string;
+  isCompleted: boolean;
+  /** @format date-time */
+  completedAt?: string | null;
   /** @format int32 */
   version: number;
 }
 
-export interface TaskSyncResult {
+export interface TaskDtoTaskSyncResult {
+  /** @format int32 */
+  version?: number | null;
   status: TaskSyncStatus;
+  conflictedTask?: TaskDto;
   errorMessage?: string | null;
 }
 
@@ -210,6 +200,8 @@ export interface UpdateTaskDto {
   type?: TaskCategory;
   /** @format date-time */
   from?: string | null;
+  /** @format date */
+  date?: string | null;
   /**
    * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
    * @example "08:00:00"
@@ -218,6 +210,11 @@ export interface UpdateTaskDto {
   priority?: TaskPriority;
   /** @format date-time */
   deadline?: string | null;
+  /** @format int32 */
+  version: number;
+  isCompleted?: boolean | null;
+  /** @format date-time */
+  completedAt?: string | null;
 }
 
 export interface UserDto {
@@ -231,7 +228,7 @@ export interface LoginCreateParams {
   password: string;
 }
 
-export type CreatemanyCreatePayload = BaseTaskDto[];
+export type CreatemanyCreatePayload = TaskDto[];
 
 export interface TasksUpdateParams {
   /** @format uuid */

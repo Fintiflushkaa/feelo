@@ -8,6 +8,8 @@ export interface TaskDto {
   name: string;
   description?: string | null;
   type: TaskCategory;
+  /** @format date */
+  date: string;
   /** @format date-time */
   from?: string | null;
   /**
@@ -26,6 +28,9 @@ export interface TaskDto {
   updated: string;
   /** @format date-time */
   to: string;
+  isCompleted: boolean;
+  /** @format date-time */
+  completedAt?: string | null;
   /** @format int32 */
   version: number;
 }
