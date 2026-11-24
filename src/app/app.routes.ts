@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { AppShellComponent } from '@shared/layout/app-shell/app-shell.component';
-import { AuthPage } from './pages/auth/auth.page';
-import { authGuard } from './core/guards/auth.guard';
+import { AuthPage } from './features/auth/auth.page';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -18,39 +18,41 @@ export const routes: Routes = [
       {
         path: 'home',
         canActivate: [authGuard],
-        loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
+        loadComponent: () => import('./features/home/home.page').then((m) => m.HomePage),
         title: 'Feelo · Главная',
       },
       {
         path: 'schedule',
         canActivate: [authGuard],
-        loadComponent: () => import('./pages/schedule/schedule.page').then((m) => m.SchedulePage),
+        loadComponent: () =>
+          import('./features/schedule/schedule.page').then((m) => m.SchedulePage),
         title: 'Feelo · Расписание',
       },
       {
         path: 'wellbeing',
         canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/wellbeing/wellbeing.page').then((m) => m.WellbeingPage),
+          import('./features/wellbeing/wellbeing.page').then((m) => m.WellbeingPage),
         title: 'Feelo · Состояние',
       },
       {
         path: 'statistics',
         canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/statistics/statistics.page').then((m) => m.StatisticsPage),
+          import('./features/statistics/statistics.page').then((m) => m.StatisticsPage),
         title: 'Feelo · Статистика',
       },
       {
         path: 'profile',
         canActivate: [authGuard],
-        loadComponent: () => import('./pages/profile/profile.page').then((m) => m.ProfilePage),
+        loadComponent: () => import('./features/profile/profile.page').then((m) => m.ProfilePage),
         title: 'Feelo · Профиль',
       },
       {
         path: 'settings',
         canActivate: [authGuard],
-        loadComponent: () => import('./pages/settings/settings.page').then((m) => m.SettingsPage),
+        loadComponent: () =>
+          import('./features/settings/settings.page').then((m) => m.SettingsPage),
         title: 'Feelo · Настройки',
       },
     ],
@@ -63,7 +65,8 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/onboarding/onboarding.page').then((m) => m.OnboardingPage),
+    loadComponent: () =>
+      import('./features/onboarding/onboarding.page').then((m) => m.OnboardingPage),
     title: 'Feelo · Онбординг',
   },
   {

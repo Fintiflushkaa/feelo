@@ -1,260 +1,227 @@
 # Feelo
 
-## Cтруктура проекта
+## Cтруктура проекта(in progress)
 
 ```
 src/
-├── app/
-│   │
-│   ├── app.config.ts              # providers: provideRouter, provideHttpClient, provideServiceWorker, DI-токены
-│   ├── app.routes.ts              # ВСЕ роуты приложения
-│   ├── app.ts                     # root component (standalone), <router-outlet>
-│   │
-│   ├── domain/
-│   │   │                          # Бизнес-правила, модели, алгоритмы.
-│   │   │
-│   │   ├── shared/
-│   │   │   ├── clock.ts           # порт Clock { now(): Iso }
-│   │   │   ├── result.ts          # Result<T, E> / DomainError
-│   │   │   └── time.ts
-│   │   │
-│   │   ├── auth/
-│   │   │   ├── user.model.ts
-│   │   │   └── auth.repository.ts         # порт: login(), register(), logout(), getSession()
-│   │   │
-│   │   ├── profile/
-│   │   │   ├── profile.model.ts            # таймзона, предпочтения планирования
-│   │   │   └── profile.repository.ts
-│   │   │
-│   │   ├── sleep/
-│   │   │   ├── sleep-schedule.model.ts     # привычное время сна будни/выходные
-│   │   │   ├── sleep-log.model.ts          # фактическое засыпание/пробуждение, качество
-│   │   │   ├── sleep.rules.ts              # сверка факта с расписанием, отклонения
-│   │   │   └── sleep.repository.ts
-│   │   │
-│   │   ├── chronotype/
-│   │   │   ├── chronotype-quiz.model.ts
-│   │   │   ├── chronotype.rules.ts         # расчёт типа из ответов опросника
-│   │   │   └── chronotype.repository.ts
-│   │   │
-│   │   ├── wellbeing/
-│   │   │   ├── daily-checkin.model.ts      # energy, fatigue, concentration (1..5)
-│   │   │   └── wellbeing.repository.ts
-│   │   │
-│   │   ├── task/
-│   │   │   ├── task.model.ts
-│   │   │   ├── task.rules.ts               # complete(), canComplete(), overdue()
-│   │   │   └── task.repository.ts
-│   │   │
-│   │   ├── events/
-│   │   │   ├── task-event.model.ts
-│   │   │   ├── event-factory.ts
-│   │   │   └── event.repository.ts
-│   │   │
-│   │   ├── circadian/
-│   │   │   ├── daily-profile.ts            # сборка профиля из sleep+chronotype+events+checkins
-│   │   │   ├── smoothing.ts                # blend() приора и наблюдений
-│   │   │   └── profile.repository.ts
-│   │   │
-│   │   ├── recommendation/
-│   │   │   ├── recommendation.model.ts
-│   │   │   └── recommendation.rules.ts     # подбор времени под категорию задачи
-│   │   │
-│   │   ├── schedule/
-│   │   │   ├── schedule.model.ts           # ScheduleSlot[], день/неделя
-│   │   │   ├── schedule-builder.ts         # автораспределение задач по профилю
-│   │   │   ├── conflict-detector.ts        # пересечения по времени
-│   │   │   └── carry-over.rules.ts         # перенос невыполненных задач
-│   │   │
-│   │   ├── notification/
-│   │   │   ├── notification.model.ts
-│   │   │   └── notification.rules.ts       # когда показывать напоминание
-│   │   │
-│   │   ├── statistics/
-│   │   │   ├── task-stats.ts
-│   │   │   └── sleep-stats.ts
-│   │   │
-│   │   └── sync/
-│   │       └── sync-operation.model.ts
-│   │
-│   ├── core/                      # Инфраструктура и адаптеры.
-│   │   │                          # Синглтоны. Без бизнес-правил.
-│   │   │
-│   │   ├── api/
-│   │   │   ├── api-client.ts               # обёртка над HttpClient
-│   │   │   ├── auth.interceptor.ts         # подстановка токена
-│   │   │   └── error.interceptor.ts
-│   │   │
-│   │   ├── auth/
-│   │   │   ├── token-storage.service.ts
-│   │   │   ├── http-auth.repository.ts     # implements domain/auth/auth.repository
-│   │   │   └── auth.guard.ts                # функциональный canActivate
-│   │   │
-│   │   ├── storage/
-│   │   │   ├── db.ts                        # openDB, схема IndexedDB
-│   │   │   ├── migrations.ts
-│   │   │   ├── indexeddb-task.repository.ts
-│   │   │   ├── indexeddb-event.repository.ts
-│   │   │   ├── indexeddb-sleep.repository.ts
-│   │   │   └── indexeddb-wellbeing.repository.ts
-│   │   │
-│   │   ├── sync/
-│   │   │   ├── outbox.ts                    # очередь неотправленных операций
-│   │   │   ├── sync.service.ts              # дренирует outbox при онлайне, last-write-wins
-│   │   │   └── network-status.service.ts    # online/offline сигнал
-│   │   │
-│   │   ├── clock/
-│   │   │   └── system-clock.ts
-│   │   │
-│   │   ├── notifications/
-│   │   │   ├── web-push.service.ts
-│   │   │   └── notification-scheduler.service.ts
-│   │   │
-│   │   ├── pwa/
-│   │   │   ├── sw-update.service.ts
-│   │   │   └── install-prompt.service.ts
-│   │   │
-│   │   └── tokens.ts                        # InjectionToken'ы для всех портов
-│   │
-│   ├── features/                  # Бизнес-логика фич: stores + компоненты фичи.
-│   │   │                          # НЕ роутится напрямую, подключается в pages.
-│   │   │
-│   │   ├── auth/
-│   │   │   ├── auth.store.ts                # login(), register(), logout(), session signal
-│   │   │   └── ui/
-│   │   │       └── auth-form/
-│   │   │
-│   │   ├── onboarding/
-│   │   │   ├── onboarding.store.ts          # шаги: сон -> хронотип -> первые задачи
-│   │   │   └── ui/
-│   │   │       ├── sleep-setup-form/
-│   │   │       └── first-tasks-form/
-│   │   │
-│   │   ├── chronotype/
-│   │   │   ├── chronotype.store.ts
-│   │   │   └── ui/
-│   │   │       ├── quiz-question/
-│   │   │       └── quiz-result/
-│   │   │
-│   │   ├── profile/
-│   │   │   ├── profile.store.ts
-│   │   │   └── ui/
-│   │   │       └── profile-form/
-│   │   │
-│   │   ├── tasks/
-│   │   │   ├── tasks.store.ts
-│   │   │   └── ui/
-│   │   │       ├── task-item/
-│   │   │       ├── task-form/               # переиспользуется в модалке создания и редактировании
-│   │   │       └── task-filters/
-│   │   │
-│   │   ├── schedule/
-│   │   │   ├── schedule.store.ts            # текущее расписание, режим день/неделя
-│   │   │   └── ui/
-│   │   │       ├── timeline/
-│   │   │       ├── schedule-slot/
-│   │   │       └── conflict-banner/
-│   │   │
-│   │   ├── circadian/
-│   │   │   ├── circadian.store.ts
-│   │   │   └── ui/
-│   │   │       ├── activity-heatmap/
-│   │   │       └── profile-legend/
-│   │   │
-│   │   ├── recommendation/
-│   │   │   ├── recommendation.store.ts
-│   │   │   └── ui/
-│   │   │       └── recommendation-card/
-│   │   │
-│   │   ├── wellbeing/
-│   │   │   ├── wellbeing.store.ts           # ежедневный чек-ин + история
-│   │   │   └── ui/
-│   │   │       ├── checkin-form/
-│   │   │       └── mood-scale/
-│   │   │
-│   │   ├── sleep/
-│   │   │   ├── sleep.store.ts
-│   │   │   └── ui/
-│   │   │       ├── sleep-log-form/
-│   │   │       └── sleep-history-list/
-│   │   │
-│   │   ├── statistics/
-│   │   │   ├── statistics.store.ts
-│   │   │   └── ui/
-│   │   │       ├── completion-chart/
-│   │   │       └── sleep-trend-chart/
-│   │   │
-│   │   ├── notifications/
-│   │   │   ├── notifications.store.ts       # настройки напоминаний
-│   │   │   └── ui/
-│   │   │       └── reminder-settings/
-│   │   │
-│   │   └── settings/
-│   │       └── settings.store.ts            # тема, формат даты, таймзона, планирование
-│   │
-│   ├── pages/                     # Роутируемые страницы. Тонкие контейнеры.
-│   │   │                          # Знают features + core + domain.
-│   │   │
-│   │   ├── home/
-│   │   │   └── home.page.ts                 # сводка: ближайшие задачи + текущий статус профиля
-│   │   │
-│   │   ├── auth/
-│   │   │   └── auth.page.ts                 # login/register тоггл на одной странице
-│   │   │
-│   │   ├── onboarding/
-│   │   │   └── onboarding.page.ts           # визард: сон -> хронотип -> первые задачи
-│   │   │
-│   │   ├── schedule/
-│   │   │   └── schedule.page.ts             # расписание недели/дня
-│   │   │
-│   │   ├── wellbeing/
-│   │   │   └── wellbeing.page.ts            # "состояния пользователя": чек-ин + история
-│   │   │
-│   │   ├── statistics/
-│   │   │   └── statistics.page.ts
-│   │   │
-│   │   ├── profile/
-│   │   │   └── profile.page.ts
-│   │   │
-│   │   └── settings/
-│   │       └── settings.page.ts
-│   │
-│   └── shared/
-│       │
-│       ├── ui/                              # презентационные компоненты
-│       │   ├── button/
-│       │   ├── modal/                       # используется tasks/ui/task-form как содержимое
-│       │   ├── badge/
-│       │   ├── empty-state/
-│       │   ├── offline-banner/              # индикатор "показываю закешированное"
-│       │   └── toast/
-│       │
-│       ├── layout/
-│       │   ├── app-shell/
-│       │   ├── header/
-│       │   └── bottom-nav/
-│       │
-│       ├── pipes/
-│       │   ├── relative-time.pipe.ts
-│       │   ├── duration.pipe.ts
-│       │   └── demand-label.pipe.ts
-│       │
-│       ├── directives/
-│       │   └── long-press.directive.ts
-│       │
-│       └── utils/
-│
-├── assets/
-│   ├── icons/
-│   └── i18n/
+├── main.ts                                  # точка входа: bootstrapApplication(App, appConfig)
+├── index.html
+├── env.d.ts                                 # типы переменных окружения (API_URL и т.п.)
+├── manifest.webmanifest                     # PWA: имя, иконки, цвета, режим запуска
+├── ngsw-config.json                         # service worker кеширует ТОЛЬКО файлы приложения
+│                                            # (js, css, иконки), чтобы оно открывалось без сети.
+│                                            # Ответы API здесь не кешируются, ими управляет IndexedDB
 │
 ├── styles/
-│   ├── tokens.css
-│   └── global.css
+│   ├── tokens.scss                          # CSS-переменные: цвета, отступы, радиусы, шрифты.
+│   └── global.scss                          # сброс стилей, базовая типографика, .visually-hidden
 │
-├── manifest.webmanifest
-├── ngsw-config.json
-└── index.html
+└── app/
+    ├── app.ts                               # корневой компонент: <app-shell> + <router-outlet>
+    ├── app.config.ts                        # провайдеры: роутер, HttpClient с интерсепторами,
+    │                                        # service worker, запуск синхронизации при старте
+    ├── app.routes.ts                        # верхний уровень роутинга: каждая фича подключается
+    │                                        # через loadChildren, здесь же навешиваются guards
+    │
+    ├── core/                                # всё, что не про конкретный экран: сеть, хранение,
+    │   │                                    # синхронизация, авторизация. Сервисы-синглтоны
+    │   │
+    │   ├── api/                             # связь с бэкендом. Кроме data/, сюда никто не ходит
+    │   │   ├── models/                   # модели DTO, сгенерированные по OpenAPI.
+    │   │   ├── services/                    # сервисы для работы с API.
+    │   │
+    │   ├── data/                            # РЕПОЗИТОРИИ: единственный способ для фич получить
+    │   │   │                                # или изменить данные. Фича не знает, пришли данные
+    │   │   │                                # из сети или из IndexedDB, и ушло изменение на сервер
+    │   │   │                                # сразу или встало в очередь
+    │   │   │
+    │   │   ├── auth/
+    │   │   │   ├── session.model.ts         # пользователь + токен
+    │   │   │   └── auth.repository.ts       # вход/регистрация/выход. Только онлайн.
+    │   │   │                                # При выходе удаляет локальную БД пользователя
+    │   │   ├── survey/
+    │   │   │   ├── survey.model.ts          # ответы анкеты в удобном для формы виде
+    │   │   │   ├── survey.mapper.ts         # форма -> SurveyAnswerDto (время 'HH:mm:ss',
+    │   │   │   │                            # длительность в формате TimeSpan)
+    │   │   │   └── survey.repository.ts     # отправка анкеты. Только онлайн
+    │   │   ├── tasks/
+    │   │   │   ├── task.model.ts            # задача + syncState: 'synced' | 'pending' | 'failed',
+    │   │   │   │                            # чтобы UI мог показать, что задача ещё не на сервере
+    │   │   │   ├── task.mapper.ts           # TaskDto <-> Task
+    │   │   │   ├── task.rules.ts            # чистые функции: просрочена ли, можно ли завершить,
+    │   │   │   │                            # пересекается ли по времени. Нужны офлайн, без бэка
+    │   │   │   └── task.repository.ts       # чтение: сразу из IndexedDB, потом обновление с сервера.
+    │   │   │                                # запись: сначала в IndexedDB и в очередь отправки,
+    │   │   │                                # UI обновляется сразу, сервер получает позже
+    │   │   ├── circadian/
+    │   │   │   ├── curve.model.ts           # точки кривой энергии, окна пиков и спадов
+    │   │   │   ├── chronotype.model.ts      # хронотип, как его вернул бэк
+    │   │   │   └── circadian.repository.ts  # только чтение. Отдаёт последнюю сохранённую версию
+    │   │   │                                # и обновляет её при наличии сети
+    │   │   ├── schedule/
+    │   │   │   ├── schedule.model.ts        # слоты расписания на день/неделю
+    │   │   │   └── schedule.repository.ts   # только чтение, как circadian. Офлайн показывает
+    │   │   │                                # расписание, посчитанное до потери сети
+    │   │   ├── recommendation/
+    │   │   │   ├── recommendation.model.ts
+    │   │   │   └── recommendation.repository.ts  # только чтение, как circadian
+    │   │   ├── statistics/
+    │   │   │   ├── statistics.model.ts
+    │   │   │   └── statistics.repository.ts      # только чтение, как circadian
+    │   │   ├── wellbeing/
+    │   │   │   ├── checkin.model.ts         # ежедневный чек-ин: энергия, усталость,
+    │   │   │   │                            # концентрация по шкале 1..5
+    │   │   │   └── wellbeing.repository.ts  # чтение и запись офлайн, как tasks
+    │   │   └── profile/
+    │   │       ├── profile.model.ts         # часовой пояс, предпочтения планирования
+    │   │       └── profile.repository.ts    # чтение и запись офлайн, как tasks
+    │   │
+    │   ├── storage/                         # IndexedDB: локальная копия данных пользователя
+    │   │   ├── db.ts                        # открытие БД. У каждого пользователя своя БД
+    │   │   │                                # (feelo-<userId>), поэтому при смене аккаунта
+    │   │   │                                # чужие данные не видны и не отправляются
+    │   │   ├── migrations.ts                # изменения схемы БД между версиями приложения
+    │   │   ├── snapshot.store.ts            # хранилище для данных «только чтение»: последний
+    │   │   │                                # ответ сервера + время, когда он получен
+    │   │   ├── task.store.ts                # таблица задач
+    │   │   ├── checkin.store.ts             # таблица чек-инов
+    │   │   └── profile.store.ts             # профиль пользователя
+    │   │
+    │   ├── sync/                            # доставка офлайн-изменений на сервер
+    │   │   ├── network-status.service.ts    # сигнал «есть ли связь с API». Не только
+    │   │   │                                # navigator.onLine: он врёт при Wi-Fi без интернета
+    │   │   ├── outbox.ts                    # очередь изменений, сохранённая в IndexedDB:
+    │   │   │                                # «создать задачу», «изменить профиль» и т.п.
+    │   │   │                                # Переживает перезагрузку страницы и закрытие вкладки
+    │   │   ├── sync.service.ts              # при появлении сети отправляет очередь по порядку,
+    │   │   │                                # повторяет при сбоях с нарастающей паузой,
+    │   │   │                                # помечает операции, которые сервер отклонил
+    │   │   └── cached-resource.ts           # общий помощник для репозиториев «только чтение»:
+    │   │                                    # отдать сохранённое, запросить свежее, сохранить
+    │   │
+    │   ├── auth/
+    │   │   ├── token-storage.service.ts     # хранение токена
+    │   │   ├── auth.guard.ts                # пускает, если токен есть и не истёк.
+    │   │   │                                # Проверка локальная, без запроса к серверу
+    │   │   └── online.guard.ts              # не пускает на экраны, которым нужна сеть
+    │   │                                    # (вход, регистрация, онбординг)
+    │   │
+    │   ├── notifications/
+    │   │   ├── web-push.service.ts          # подписка на push-уведомления с сервера
+    │   │   └── local-reminder.scheduler.ts  # локальные напоминания о задачах, работают офлайн
+    │   │
+    │   └── pwa/
+    │       ├── sw-update.service.ts         # предлагает перезагрузку, когда вышла новая версия
+    │       └── install-prompt.service.ts    # кнопка «Установить приложение»
+    │
+    ├── features/                            # экраны и их части.
+    │   │
+    │   ├── auth/                            # вход и регистрация. Онлайн
+    │   │   ├── auth.page.ts                 # контейнер: вызывает store, после входа
+    │   │   │                                # перенаправляет на онбординг или главную
+    │   │   └── ui/auth-form/                # только поля и кнопки, данные наружу через output
+    │   │
+    │   ├── onboarding/                      # первичная анкета о сне и пиках активности. Онлайн
+    │   │   ├── onboarding.page.ts           # контейнер: связывает store и ui,
+    │   │   │                                # после успешной отправки уходит на главную
+    │   │   ├── onboarding.store.ts          # текущий шаг, ответы, переходы вперёд/назад,
+    │   │   │                                # черновик в sessionStorage, отправка
+    │   │   ├── survey-questions.ts          # список вопросов анкеты: текст, тип поля,
+    │   │   │                                # варианты ответов. Порядок = порядок шагов
+    │   │   └── ui/question-step/            # отображает один вопрос; не знает,
+    │   │                                    # сколько всего шагов и куда отправляются ответы
+    │   │
+    │   ├── home/                            # главная: ближайшие задачи, кривая энергии,
+    │   │   │                                # рекомендации. Своих данных нет, собирает
+    │   │   │                                # компоненты из tasks, circadian, recommendation
+    │   │   └── home.page.ts
+    │   │
+    │   ├── tasks/                           # список задач, создание и редактирование. Офлайн
+    │   │   ├── index.ts                     # что фича отдаёт наружу (для home и schedule)
+    │   │   ├── tasks.page.ts
+    │   │   ├── tasks.store.ts               # список, фильтры, создание/изменение/удаление
+    │   │   └── ui/
+    │   │       ├── task-item/               # строка задачи
+    │   │       ├── task-form/               # форма задачи: и в модалке создания, и в редактировании
+    │   │       ├── task-filters/            # фильтры по категории и статусу
+    │   │       └── sync-badge/              # значок на задаче, которая ещё не ушла на сервер
+    │   │                                    # или которую сервер отклонил
+    │   │
+    │   ├── schedule/                        # расписание на день/неделю от бэка. Офлайн — просмотр
+    │   │   ├── index.ts
+    │   │   ├── schedule.page.ts
+    │   │   ├── schedule.store.ts            # выбранный день, режим день/неделя
+    │   │   └── ui/
+    │   │       ├── timeline/                # шкала времени со слотами
+    │   │       ├── schedule-slot/           # один слот: задача и её время
+    │   │       └── conflict-banner/         # предупреждение о пересекающихся задачах
+    │   │
+    │   ├── circadian/                       # кривая энергии и хронотип. Своего роута нет,
+    │   │   │                                # компоненты встраиваются в home и schedule
+    │   │   ├── index.ts
+    │   │   ├── circadian.store.ts
+    │   │   └── ui/
+    │   │       ├── energy-curve/            # график по точкам, пришедшим с бэка
+    │   │       └── chronotype-card/         # хронотип и пояснение к нему
+    │   │
+    │   ├── recommendation/                  # советы, когда лучше делать задачу. Роута нет
+    │   │   ├── index.ts
+    │   │   ├── recommendation.store.ts
+    │   │   └── ui/recommendation-card/
+    │   │
+    │   ├── wellbeing/                       # ежедневный чек-ин самочувствия + история. Офлайн
+    │   │   ├── wellbeing.page.ts
+    │   │   ├── wellbeing.store.ts
+    │   │   └── ui/
+    │   │       ├── checkin-form/            # форма чек-ина
+    │   │       └── mood-scale/              # шкала 1..5
+    │   │
+    │   ├── statistics/                      # графики выполнения задач и сна. Офлайн — просмотр
+    │   │   ├── statistics.page.ts
+    │   │   ├── statistics.store.ts          # выбранный период
+    │   │   └── ui/
+    │   │       ├── completion-chart/        # доля выполненных задач
+    │   │       └── sleep-trend-chart/       # динамика сна
+    │   │
+    │   ├── profile/                         # данные пользователя и предпочтения. Офлайн
+    │   │   ├── profile.page.ts
+    │   │   ├── profile.store.ts
+    │   │   └── ui/profile-form/
+    │   │
+    │   ├── notifications/                   # настройки напоминаний. Роута нет,
+    │   │   │                                # встраивается в settings
+    │   │   ├── index.ts
+    │   │   ├── notifications.store.ts
+    │   │   └── ui/reminder-settings/
+    │   │
+    │   └── settings/                        # тема, формат даты, напоминания.
+    │       │                                # Хранится только на устройстве, на сервер не уходит
+    │       ├── settings.page.ts
+    │       └── settings.store.ts
+    │
+    └── shared/                              # переиспользуемое без привязки к данным и бэку
+        ├── ui/
+        │   ├── button/
+        │   ├── modal/
+        │   ├── badge/
+        │   ├── toast/                       # всплывающие сообщения
+        │   ├── empty-state/                 # заглушка «здесь пока ничего нет»
+        │   ├── offline-banner/              # общая плашка «Нет подключения к интернету»
+        │   └── stale-indicator/             # подпись у блока, который показывает сохранённые
+        │                                    # данные вместо свежих, например «Обновлено в 14:20».
+        │                                    # Нужна для кривой, расписания, рекомендаций офлайн
+        ├── layout/
+        │   ├── app-shell/                   # каркас: шапка, контент, нижнее меню
+        │   ├── header/
+        │   └── bottom-nav/
+        ├── pipes/
+        │   ├── relative-time.pipe.ts        # «через 2 часа», «вчера»
+        │   └── duration.pipe.ts             # 1.5 -> «1 ч 30 мин»
+        ├── directives/
+        │   ├── focus-on.directive.ts        # перевод фокуса после рендера (шаги визардов)
+        │   └── long-press.directive.ts
+        └── utils/
+            └── time.ts                      # 'HH:mm' <-> 'HH:mm:ss', часы <-> TimeSpan
 ```
 
 ## Запуск проекта
@@ -266,3 +233,10 @@ npm start
 
 Откройте http://localhost:4200/auth. После регистрации приложение переключается на вход;
 после успешного входа открывается `/login`.
+
+Для запуска в сервис воркере
+
+```bash
+ng build --configuration production
+npx http-server dist/feelo/browser -p 8080 -c-1
+```

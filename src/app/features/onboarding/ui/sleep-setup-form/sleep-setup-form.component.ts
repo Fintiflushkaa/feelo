@@ -4,11 +4,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import { AlarmUsage } from '../../../../../api/models/alarm-usage';
-import { DipPreference } from '../../../../../api/models/dip-preference';
-import { PeakPreference } from '../../../../../api/models/peak-preference';
-import { SurveyAnswerDto } from '../../../../../api/models/survey-answer-dto';
-import { SurveyService } from '../../../../../api/services/survey.service';
+import { AlarmUsage } from '../../../../core/api/models/alarm-usage';
+import { DipPreference } from '../../../../core/api/models/dip-preference';
+import { PeakPreference } from '../../../../core/api/models/peak-preference';
+import { SurveyAnswerDto } from '../../../../core/api/models/survey-answer-dto';
+import { SurveyService } from '../../../../core/api/services/survey.service';
 
 const peakOptions: { value: PeakPreference; label: string }[] = [
   { value: 'Morning', label: 'Утром' },
