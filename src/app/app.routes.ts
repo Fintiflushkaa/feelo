@@ -33,7 +33,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () =>
           import('./features/wellbeing/wellbeing.page').then((m) => m.WellbeingPage),
-        title: 'Feelo · Состояние',
+        title: 'Feelo · Ритм',
       },
       {
         path: 'statistics',

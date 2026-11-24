@@ -1,0 +1,132 @@
+<div class="rhythm">
+  <h1>Ритм</h1>
+  @if (pending()) {
+    <p class="notice" role="status">Загружаем ваш ритм…</p>
+  } @else if (error()) {
+    <div class="notice" role="alert">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="load()">Попробовать снова</button>
+    </div>
+  } @else {
+    <section aria-labelledby="sleep-title">
+      <h2 id="sleep-title">Режим сна</h2>
+      @if (profileError()) {
+        <p class="hint" role="alert">
+          Не удалось загрузить режим сна. <button type="button" (click)="load()">Повторить</button>
+        </p>
+      }
+      <div class="sleep-cards">
+        <div class="sleep-card">
+          <h3>Будни</h3>
+          <p>
+            {{ clock(profile()?.sleepProfile?.workDays?.sleepStart) }} -
+            {{ clock(profile()?.sleepProfile?.workDays?.wakeTime) }}
+          </p>
+        </div>
+        <div class="sleep-card">
+          <h3>Выходные</h3>
+          <p>
+            {{ clock(profile()?.sleepProfile?.freeDays?.sleepStart) }} -
+            {{ clock(profile()?.sleepProfile?.freeDays?.wakeTime) }}
+          </p>
+        </div>
+      </div>
+      <div class="wake-heading">
+        <h2 id="wake-title">Обязательное время пробуждения</h2>
+        <span
+          class="wake-switch"
+          [class.wake-switch--on]="!!wakeTime()"
+          role="img"
+          [attr.aria-label]="wakeTime() ? 'Установлено' : 'Не установлено'"
+        ></span>
+      </div>
+      <div class="wake-time" aria-labelledby="wake-title">{{ clock(wakeTime()) }}</div>
+      <p class="hint">Например: встаю не позже 07:00 из-за работы</p>
+      @if (!profile()?.sleepProfile && !profileError()) {
+        <p class="hint">
+          Заполните <a routerLink="/onboarding">анкету</a>, чтобы увидеть режим сна.
+        </p>
+      }
+    </section>
+
+    <section class="day" aria-labelledby="day-title">
+      <h2 id="day-title">Твой день</h2>
+      @if (sleep().length) {
+        <div
+          class="day-scale"
+          role="img"
+          aria-label="Режим дня: фиолетовый — сон, зелёный — активность"
+        >
+          <div class="day-track">
+            @for (segment of sleep(); track $index) {
+              <span
+                class="day-sleep"
+                [style.left.%]="segment.left"
+                [style.width.%]="segment.width"
+              ></span>
+            }
+          </div>
+          <div class="day-marker day-marker--start"><span>00:00</span></div>
+          <div class="day-marker day-marker--middle"><span>12:00</span></div>
+          <div class="day-marker day-marker--end"><span>24:00</span></div>
+        </div>
+        <div class="legend">
+          <span><i class="legend-sleep"></i>Сон</span
+          ><span><i class="legend-active"></i>Активность</span>
+        </div>
+      } @else {
+        <p class="empty">Режим сна пока не задан</p>
+      }
+    </section>
+
+    <div class="charts">
+      @for (chart of charts(); track chart.kind) {
+        <section class="chart" [attr.aria-labelledby]="'title-' + chart.kind">
+          <h2 [id]="'title-' + chart.kind">{{ chart.title }}</h2>
+          <div class="chart-card">
+            @if (chart.points.length) {
+              <svg
+                viewBox="0 0 340 150"
+                role="img"
+                [attr.aria-labelledby]="'svg-title-' + chart.kind"
+              >
+                <title [id]="'svg-title-' + chart.kind">
+                  {{ chart.title }} за {{ date }}. {{ chart.points.length }} точек.
+                </title>
+                <defs>
+                  <linearGradient [id]="'line-' + chart.kind" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0%" [attr.stop-color]="chart.color" />
+                    <stop offset="100%" stop-color="#e8d66a" />
+                  </linearGradient>
+                </defs>
+                <path class="chart-midline" d="M 0 64 H 340" />
+                <path
+                  class="chart-line"
+                  [attr.d]="chart.path"
+                  [attr.stroke]="'url(#line-' + chart.kind + ')'"
+                />
+                @for (hour of ticks; track hour) {
+                  <text [attr.x]="26 + (hour / 24) * 288" y="139" text-anchor="middle">
+                    {{ hour === 24 ? '00' : hour.toString().padStart(2, '0') }}:00
+                  </text>
+                }
+                @for (point of chart.markers; track point.x) {
+                  <path
+                    class="chart-guide"
+                    [attr.d]="'M ' + point.x + ' ' + point.y + ' V 126'"
+                    [attr.stroke]="chart.color"
+                  />
+                  <circle [attr.cx]="point.x" [attr.cy]="point.y" r="4.5" [attr.fill]="chart.color">
+                    <title>{{ point.label }}</title>
+                  </circle>
+                }
+              </svg>
+            } @else {
+              <p class="empty">Пока нет данных за этот день</p>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>
